@@ -19,8 +19,8 @@ export interface IPost extends PostBase,Document{
 interface IPostMethods{
     likePost(userID:string):Promise<void>,
     unlikePost(userID:string):Promise<void>,
-    commentOnPost(userID:string):Promise<void>,
-    getCommentsOnPost(userID:string):Promise<IComment[]>,
+    commentOnPost(comment: CommentBase):Promise<void>,
+    getCommentsOnPost():Promise<IComment[]>,
     removePost():Promise<void>
 }
 

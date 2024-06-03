@@ -1,6 +1,6 @@
 "use server";
 
-import { AddPostRequestBody } from "@/app/api/posts/routes";
+import { AddPostRequestBody } from "@/app/api/posts/route";
 import { Post } from "@/mongodb/models/posts";
 import { User } from "@/types/user";
 import { currentUser } from "@clerk/nextjs/server";
