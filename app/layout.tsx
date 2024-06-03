@@ -19,14 +19,16 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        <header className="bg-white sticky top-0 z-50 border-b"><Header /></header>
-        <div className="flex-1 bg-[#F4F2ED] w-full">
-          <main>{children}</main>
-        </div>
-      </body>
-    </html>
+      <html lang="en">
+        <body className="flex flex-col min-h-screen">
+          <header className="bg-white sticky top-0 z-50 border-b">
+            <Header />
+          </header>
+          <div className="flex-1 bg-[#F4F2ED] w-full">
+            <main>{children}</main>
+          </div>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

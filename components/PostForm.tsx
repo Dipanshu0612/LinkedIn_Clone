@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { ImageIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
+import createPostAction from "@/actions/createPostActions";
 
 function PostForm() {
   const { user } = useUser();
@@ -54,7 +55,7 @@ function PostForm() {
             type="text"
             placeholder="Start writing a post..."
             name="postInput"
-            className="flex-1 outline-none rounded-full py-3 px-4 border"
+            className="flex-1 outline-none rounded-full py-3 px-4 border border-gray-400"
           />
 
           <input
