@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className="flex flex-col min-h-screen">
+        <Toaster position="bottom-left" />
           <header className="bg-white sticky top-0 z-50 border-b">
             <Header />
           </header>
