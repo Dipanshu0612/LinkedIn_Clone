@@ -6,7 +6,7 @@
 A fully functional and responsive Full Stack LinkedIn Clone Website.
 
 ### Tools Used
-The project is a NextJs project with use of Tailwind CSS, Microsoft Azure, MongoDB, and ShadCN UI.
+The project is a NextJs project with use of Tailwind CSS, Typescript, Microsoft Azure, MongoDB, and ShadCN UI.
 
 ### Image Previewa
 
