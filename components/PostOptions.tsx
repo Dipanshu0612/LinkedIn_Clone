@@ -12,13 +12,7 @@ import { toast } from "sonner";
 import CommentForm from "./CommentForm";
 import CommentFeed from "./CommentFeed";
 
-function PostOptions({
-  postId,
-  post,
-}: {
-  postId: string ;
-  post: IPostDocument;
-}) {
+function PostOptions({postId,post}: {postId: string ; post: IPostDocument;}){
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const { user } = useUser();
   const [liked, setLiked] = useState(false);

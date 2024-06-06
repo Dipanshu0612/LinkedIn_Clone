@@ -2,22 +2,22 @@ import connectDB from "@/mongodb/db";
 import { Post } from "@/mongodb/models/posts";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { post_id: string } }
+export async function GET(request:Request, {params}:{params :{posts_id : string}}
 ) {
   await connectDB();
 
   try {
-    const post = await Post.findOne({_id:`${params.post_id}`});
+    // console.log(params.posts_id);
+    const post = await Post.findOne({_id:`${params.posts_id}`});
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-    console.log("Post Found",post)
+    // console.log("Post Found",post)
     const likes = post.likes;
     return NextResponse.json(likes);
   } catch (error) {
+    // console.log(error)
     return NextResponse.json(
       { error: "An error occurred while fetching likes" },
       { status: 500 }
@@ -31,14 +31,14 @@ export interface LikePostRequestBody {
 
 export async function POST(
   request: Request,
-  { params }: { params: { post_id: string } }
+  { params }: { params: { posts_id: string } }
 ) {
   await connectDB();
 
   const { userId }: LikePostRequestBody = await request.json();
 
   try {
-    const post = await Post.findById(params.post_id);
+    const post = await Post.findById(params.posts_id);
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });

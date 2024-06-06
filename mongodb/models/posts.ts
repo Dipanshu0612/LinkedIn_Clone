@@ -1,5 +1,6 @@
 import { Comment, CommentBase, IComment } from "@/types/comment";
 import { User } from "@/types/user";
+import clsx from "clsx";
 import { createDecipheriv } from "crypto";
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
@@ -42,7 +43,7 @@ const PostSchema = new Schema<IPostDocument>(
     text: { type: String, required: true },
     imageurl: { type: String, required: true },
     comments: { type: [Schema.Types.ObjectId], ref: "Comment", default: [] },
-    likes: { type: [String] },
+    likes: { type: [mongoose.SchemaTypes.ObjectId] },
   },
   {
     timestamps: true,

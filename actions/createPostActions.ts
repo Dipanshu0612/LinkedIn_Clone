@@ -63,11 +63,11 @@ export default async function createPostAction(formData: FormData) {
       console.log("Executing Image Post Option!");
       await Post.create(body);
     } else {
-      // const body: AddPostRequestBody = {
-      //   user: userDB,
-      //   text: postInput,
-      // };
-      // await Post.create(body);
+      const body: AddPostRequestBody = {
+        user: userDB,
+        text: postInput,
+      };
+      await Post.create(body);
     }
   } catch (error: any) {
     throw new Error("Faild to create the Post!", error);

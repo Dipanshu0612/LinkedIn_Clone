@@ -30,7 +30,7 @@ function CommentFeed({ post }: { post: IPostDocument }) {
                 </p>
                 <p className="text-xs text-gray-400">
                   @{comment.user.firstName}
-                  {comment.user.firstName}-
+                  {comment.user.lastName}-
                   {comment.user.userID.toString().slice(-4)}
                 </p>
               </div>

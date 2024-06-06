@@ -8,13 +8,13 @@ export interface UnlikePostRequestBody {
 
 export async function POST(
   request: Request,
-  { params }: { params: { post_id: string } }
+  { params }: { params: { posts_id: string } }
 ) {
   await connectDB();
 
   const { userId }: UnlikePostRequestBody = await request.json();
   try {
-    const post = await Post.findById(params.post_id);
+    const post = await Post.findById(params.posts_id);
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
