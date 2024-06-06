@@ -52,7 +52,7 @@ function Post({ post }: { post: IPostDocument }) {
             <Button
               variant="outline"
               onClick={() => {
-                const promise = deletePostAction(post._id);
+                const promise = deletePostAction(post._id as string);
                 toast.promise(promise, {
                   loading: "Deleting post...",
                   success: "Post deleted!",
@@ -79,7 +79,7 @@ function Post({ post }: { post: IPostDocument }) {
         )}
       </div>
 
-      <PostOptions postId={post._id} post={post} />
+      <PostOptions postId={post._id as string} post={post} />
     </div>
   );
 }
