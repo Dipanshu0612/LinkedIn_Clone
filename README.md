@@ -1,3 +1,18 @@
+# LinkedIn_Clone
+
+## This project is still in development.
+
+## About Project
+A fully functional and responsive Full Stack LinkedIn Clone Website.
+
+### Tools Used
+The project is a NextJs project with use of Tailwind CSS, Typescript, Microsoft Azure, MongoDB, and ShadCN UI.
+
+### Image Previewa
+
+
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -35,5 +50,3 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
-# LinkedIn_Clone
-A fully functional and responsive Full Stack LinkedIn clone. 
