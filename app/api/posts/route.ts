@@ -8,33 +8,35 @@ import { NextResponse } from "next/server";
 export interface AddPostRequestBody {
   user: User;
   text: string;
-  imageUrl?: string | null;
+  imageurl?: string;
 }
 
 export async function POST(request: Request) {
-  auth().protect();
+  // auth().protect();
   try {
     await connectDB();
-    const { user, text, imageUrl }: AddPostRequestBody = await request.json();
-
+    const { user, text, imageurl }: AddPostRequestBody = await request.json();
+    console.log("Image URL is : ", imageurl);
     const postData: PostBase = {
       user,
       text,
-      ...(imageUrl && { imageUrl }),
+      ...(imageurl && { imageurl }),
     };
 
     const post = await Post.create(postData);
     return NextResponse.json({
-        message:"Succesfully created a post!", post
-    })
+      message: "Succesfully created a post!",
+      post,
+    });
   } catch (error) {
-    return NextResponse.json({
-        error:`An error occured while creating the post: ${error}`
-    },
-    {
-        status:500
-    }
-)
+    return NextResponse.json(
+      {
+        error: `An error occured while creating the post: ${error}`,
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }
 

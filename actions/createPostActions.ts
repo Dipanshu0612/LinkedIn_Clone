@@ -17,7 +17,7 @@ export default async function createPostAction(formData: FormData) {
 
   const postInput = formData.get("postInput") as string;
   const image = formData.get("image") as File;
-  let imageUrl: string | undefined = undefined;
+  let finalImageUrl: string;
 
   if (!postInput) {
     throw new Error("Please provide a input!");
@@ -50,26 +50,28 @@ export default async function createPostAction(formData: FormData) {
 
       const imageBuffer = await image.arrayBuffer();
       const res = await blockBlobClient.uploadData(imageBuffer);
-      imageUrl = res._response.request.url;
+      finalImageUrl = res._response.request.url;
 
-      console.log("File uploaded successfully!", imageUrl);
+      console.log("File uploaded successfully!");
 
       const body: AddPostRequestBody = {
         user: userDB,
         text: postInput,
-        imageUrl: imageUrl,
+        imageurl: finalImageUrl,
       };
+
+      console.log("Executing Image Post Option!");
       await Post.create(body);
     } else {
-      const body: AddPostRequestBody = {
-        user: userDB,
-        text: postInput,
-      };
-      await Post.create(body);
+      // const body: AddPostRequestBody = {
+      //   user: userDB,
+      //   text: postInput,
+      // };
+      // await Post.create(body);
     }
   } catch (error: any) {
     throw new Error("Faild to create the Post!", error);
   }
 
-  revalidatePath('/')
+  revalidatePath("/");
 }

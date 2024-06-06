@@ -9,12 +9,12 @@ export async function GET(
   await connectDB();
 
   try {
-    const post = await Post.findById(params.post_id);
+    const post = await Post.findOne({_id:`${params.post_id}`});
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-
+    console.log("Post Found",post)
     const likes = post.likes;
     return NextResponse.json(likes);
   } catch (error) {

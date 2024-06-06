@@ -54,6 +54,7 @@ function PostForm() {
           <input
             type="text"
             placeholder="Start writing a post..."
+            autoComplete="off"
             name="postInput"
             className="flex-1 outline-none rounded-full py-3 px-4 border border-gray-400"
           />

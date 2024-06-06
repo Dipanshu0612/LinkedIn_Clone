@@ -14,7 +14,6 @@ import { Badge } from "./ui/badge";
 
 function Post({ post }: { post: IPostDocument }) {
   const { user } = useUser();
-
   const isAuthor = user?.id === post.user.userID;
   return (
     <div className="bg-white rounded-md border">
@@ -41,7 +40,7 @@ function Post({ post }: { post: IPostDocument }) {
             </p>
             <p className="text-xs text-gray-400">
               @{post.user.firstName}
-              {post.user.firstName}-{post.user.userID.toString().slice(-4)}
+              {post.user?.lastName}-{post.user.userID.toString().slice(-4)}
             </p>
 
             <p className="text-xs text-gray-400">
@@ -69,9 +68,9 @@ function Post({ post }: { post: IPostDocument }) {
 
       <div className="">
         <p className="px-4 pb-2 mt-2">{post.text}</p>
-        {post.imageURL && (
+        {post.imageurl && (
           <Image
-            src={post.imageURL}
+            src={post.imageurl}
             alt="Post Image"
             width={500}
             height={500}
