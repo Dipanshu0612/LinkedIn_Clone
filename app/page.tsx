@@ -5,12 +5,11 @@ import Widget from "@/components/Widget";
 import connectDB from "@/mongodb/db";
 import { Post } from "@/mongodb/models/posts";
 import { SignedIn } from "@clerk/nextjs";
-import Image from "next/image";
 
 export const revalidate = 0;
 
 export default async function Home() {
-  const db=await connectDB();
+  await connectDB();
   const posts = await Post.getAllPosts();
   return (
     <div className="grid grid-cols-8 mt-5 sm:px-5">

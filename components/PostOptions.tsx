@@ -3,20 +3,25 @@
 import { useEffect, useState } from "react";
 import { MessageCircle, Repeat2, Send, ThumbsUpIcon } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { LikePostRequestBody } from "@/app/api/posts/[posts_id]/like/route";
 import { IPostDocument } from "@/mongodb/models/posts";
 import { cn } from "@/lib/utils";
-import { UnlikePostRequestBody } from "@/app/api/posts/[posts_id]/unlike/route";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import CommentForm from "./CommentForm";
 import CommentFeed from "./CommentFeed";
 
-function PostOptions({postId,post}: {postId: string ; post: IPostDocument;}){
+function PostOptions({
+  postId,
+  post,
+}: {
+  postId: string;
+  post: IPostDocument;
+}) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const { user } = useUser();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
+  const [isLikePending, setIsLikePending] = useState(false);
 
   useEffect(() => {
     if (user?.id && post.likes?.includes(user.id)) {
@@ -25,6 +30,8 @@ function PostOptions({postId,post}: {postId: string ; post: IPostDocument;}){
   }, [post, user]);
 
   const likeOrUnlikePost = async () => {
+    if (isLikePending) return;
+
     if (!user?.id) {
       throw new Error("User not authenticated");
     }
@@ -36,38 +43,40 @@ function PostOptions({postId,post}: {postId: string ; post: IPostDocument;}){
       ? likes?.filter((like) => like !== user.id)
       : [...(likes ?? []), user.id];
 
-    const body: LikePostRequestBody | UnlikePostRequestBody = {
-      userId: user.id,
-    };
+    setIsLikePending(true);
 
-    setLiked(!liked);
-    setLikes(newLikes);
+    try {
+      setLiked(!liked);
+      setLikes(newLikes);
 
-    const response = await fetch(
-      `/api/posts/${postId}/${liked ? "unlike" : "like"}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/posts/${postId}/${liked ? "unlike" : "like"}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-        body: JSON.stringify({ ...body }),
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to like post");
       }
-    );
 
-    if (!response.ok) {
+      const fetchLikesResponse = await fetch(`/api/posts/${postId}/like`);
+      if (!fetchLikesResponse.ok) {
+        throw new Error("Failed to fetch likes");
+      }
+
+      const newLikesData = await fetchLikesResponse.json();
+      setLikes(newLikesData || []);
+    } catch (error) {
       setLiked(originalLiked);
-      throw new Error("Failed to like post");
-    }
-
-    const fetchLikesResponse = await fetch(`/api/posts/${postId}/like`);
-    if (!fetchLikesResponse.ok) {
       setLikes(originalLikes);
-      throw new Error("Failed to fetch likes");
+      throw error;
+    } finally {
+      setIsLikePending(false);
     }
-
-    const newLikesData = await fetchLikesResponse.json();
-
-    setLikes(newLikesData);
   };
 
   return (
@@ -98,6 +107,7 @@ function PostOptions({postId,post}: {postId: string ; post: IPostDocument;}){
           variant="ghost"
           className="postButton"
           onClick={likeOrUnlikePost}
+          disabled={isLikePending}
         >
           <ThumbsUpIcon
             className={cn("mr-1", liked && "text-[#4881c2] fill-[#4881c2]")}
@@ -113,18 +123,18 @@ function PostOptions({postId,post}: {postId: string ; post: IPostDocument;}){
           <MessageCircle
             className={cn(
               "mr-1",
-              isCommentsOpen && "text-gray-600 fill-gray-600"
+              isCommentsOpen && "text-gray-600 fill-gray-600",
             )}
           />
           Comment
         </Button>
 
-        <Button variant="ghost" className="postButton">
+        <Button variant="ghost" className="postButton" disabled>
           <Repeat2 className="mr-1" />
           Repost
         </Button>
 
-        <Button variant="ghost" className="postButton">
+        <Button variant="ghost" className="postButton" disabled>
           <Send className="mr-1" />
           Send
         </Button>

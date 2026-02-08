@@ -1,52 +1,77 @@
-# LinkedIn_Clone
+# LinkedIn Clone
 
-## This project is still in development.
+A full-stack LinkedIn-style social feed application built with Next.js, Clerk authentication, and MongoDB.
 
-## About Project
-A fully functional and responsive Full Stack LinkedIn Clone Website.
+## Project Status
 
-### Tools Used
-The project is a NextJs project with use of Tailwind CSS, Typescript, Microsoft Azure, MongoDB, and ShadCN UI.
+This project is actively under development.
 
-### Image Previewa
+## Features
 
+- User authentication with Clerk
+- Create text-only posts or posts with images
+- Image upload support via Cloudflare R2
+- Feed with newest posts first
+- Like, unlike, comment, and delete post functionality
+- Responsive UI using Tailwind CSS + shadcn/ui primitives
 
+## Tech Stack
 
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Database:** MongoDB + Mongoose
+- **Authentication:** Clerk
+- **File Storage:** Cloudflare R2 (S3-compatible API)
+- **UI:** Tailwind CSS, shadcn/ui, Radix UI, Lucide Icons
+- **Notifications:** Sonner
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Environment Variables
+
+Create a `.env.local` file in the project root and configure the required values:
+
+```env
+# MongoDB
+MONGO_DB_URL=
+
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+# Cloudflare R2 (S3-compatible)
+R2_ENDPOINT=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+
+# Optional: public base URL for your R2 bucket/custom domain
+# Example: https://cdn.yourdomain.com
+R2_PUBLIC_BASE_URL=
+```
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run lint checks
 
-## Learn More
+## Notes
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
+- The app uses Next.js server actions for post/comment mutations.
+- Remote image domains are configured in `next.config.mjs`.

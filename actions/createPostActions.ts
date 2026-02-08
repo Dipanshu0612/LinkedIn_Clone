@@ -1,12 +1,11 @@
 "use server";
 
 import { AddPostRequestBody } from "@/app/api/posts/route";
-import generateSAStoken, { containerName } from "@/lib/generateSASToken";
+import { uploadImageToR2 } from "@/lib/r2";
+import connectDB from "@/mongodb/db";
 import { Post } from "@/mongodb/models/posts";
 import { User } from "@/types/user";
-import { BlobServiceClient } from "@azure/storage-blob";
 import { currentUser } from "@clerk/nextjs/server";
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 
 export default async function createPostAction(formData: FormData) {
@@ -17,9 +16,9 @@ export default async function createPostAction(formData: FormData) {
 
   const postInput = formData.get("postInput") as string;
   const image = formData.get("image") as File;
-  let finalImageUrl: string;
+  let finalImageUrl: string | undefined;
 
-  if (!postInput) {
+  if (!postInput?.trim()) {
     throw new Error("Please provide a input!");
   }
 
@@ -30,47 +29,22 @@ export default async function createPostAction(formData: FormData) {
     lastName: user.lastName || "",
   };
   try {
-    if (image.size > 0) {
-      console.log("Uploading image to Azure Blob Storage...", image);
+    await connectDB();
 
-      const accountName = process.env.AZURE_STORAGE_NAME;
-
-      const sasToken = await generateSAStoken();
-
-      const blobServiceClient = new BlobServiceClient(
-        `https://${accountName}.blob.core.windows.net?${sasToken}`
-      );
-
-      const containerClient =
-        blobServiceClient.getContainerClient(containerName);
-      const timestamp = new Date().getTime();
-      const file_name = `${randomUUID()}_${timestamp}.png`;
-
-      const blockBlobClient = containerClient.getBlockBlobClient(file_name);
-
-      const imageBuffer = await image.arrayBuffer();
-      const res = await blockBlobClient.uploadData(imageBuffer);
-      finalImageUrl = res._response.request.url;
-
-      console.log("File uploaded successfully!");
-
-      const body: AddPostRequestBody = {
-        user: userDB,
-        text: postInput,
-        imageurl: finalImageUrl,
-      };
-
-      console.log("Executing Image Post Option!");
-      await Post.create(body);
-    } else {
-      const body: AddPostRequestBody = {
-        user: userDB,
-        text: postInput,
-      };
-      await Post.create(body);
+    if (image && image.size > 0) {
+      finalImageUrl = await uploadImageToR2(image);
     }
+
+    const body: AddPostRequestBody = {
+      user: userDB,
+      text: postInput.trim(),
+      ...(finalImageUrl && { imageurl: finalImageUrl }),
+    };
+
+    await Post.create(body);
   } catch (error: any) {
-    throw new Error("Faild to create the Post!", error);
+    console.error("Error uploading file or creating post:", error.message);
+    throw new Error("Unable to create post");
   }
 
   revalidatePath("/");

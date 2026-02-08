@@ -1,7 +1,5 @@
 import { Comment, CommentBase, IComment } from "@/types/comment";
 import { User } from "@/types/user";
-import clsx from "clsx";
-import { createDecipheriv } from "crypto";
 import mongoose, { Schema, Document, models, Model } from "mongoose";
 
 export interface PostBase {
@@ -26,7 +24,7 @@ interface IPostMethods {
 }
 
 interface IPostStatics {
-  getAllPosts(): Promise<IPostDocument[]>;
+  getAllPosts(): Promise<IPostDocument[] | []>;
 }
 
 export interface IPostDocument extends IPost, IPostMethods {}
@@ -41,13 +39,13 @@ const PostSchema = new Schema<IPostDocument>(
       lastName: { type: String },
     },
     text: { type: String, required: true },
-    imageurl: { type: String, required: true },
+    imageurl: { type: String },
     comments: { type: [Schema.Types.ObjectId], ref: "Comment", default: [] },
-    likes: { type: [mongoose.SchemaTypes.ObjectId] },
+    likes: { type: [String], default: [] },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 PostSchema.methods.likePost = async function (userID: string) {
@@ -91,6 +89,7 @@ PostSchema.methods.getCommentsOnPost = async function () {
     return this.comments;
   } catch (error) {
     console.log("Error while getting all the comments on the post:", error);
+    return [];
   }
 };
 
@@ -115,6 +114,7 @@ PostSchema.statics.getAllPosts = async function () {
     }));
   } catch (error) {
     console.log("error when getting all posts", error);
+    return [];
   }
 };
 

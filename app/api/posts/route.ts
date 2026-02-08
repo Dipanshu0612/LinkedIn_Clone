@@ -2,7 +2,6 @@ import connectDB from "@/mongodb/db";
 import { Post, PostBase } from "@/mongodb/models/posts";
 import { User } from "@/types/user";
 import { auth } from "@clerk/nextjs/server";
-import { errorMonitor } from "events";
 import { NextResponse } from "next/server";
 
 export interface AddPostRequestBody {
@@ -12,14 +11,21 @@ export interface AddPostRequestBody {
 }
 
 export async function POST(request: Request) {
-  // auth().protect();
+  auth().protect();
   try {
     await connectDB();
     const { user, text, imageurl }: AddPostRequestBody = await request.json();
-    console.log("Image URL is : ", imageurl);
+
+    if (!user?.userID || !text?.trim()) {
+      return NextResponse.json(
+        { error: "Invalid post payload" },
+        { status: 400 },
+      );
+    }
+
     const postData: PostBase = {
       user,
-      text,
+      text: text.trim(),
       ...(imageurl && { imageurl }),
     };
 
@@ -35,7 +41,7 @@ export async function POST(request: Request) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
@@ -43,14 +49,14 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     await connectDB();
-    const posts = await Post.getAllPosts();
+    const posts = (await Post.getAllPosts()) || [];
     return NextResponse.json({ posts });
   } catch (error) {
     return NextResponse.json(
       {
         error: "An error occured while fetching posts!",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

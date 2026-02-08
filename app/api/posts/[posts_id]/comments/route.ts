@@ -2,11 +2,12 @@ import connectDB from "@/mongodb/db";
 import { ICommentBase } from "@/mongodb/models/comments";
 import { Post } from "@/mongodb/models/posts";
 import { User } from "@/types/user";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { posts_id: string } }
+  { params }: { params: { posts_id: string } },
 ) {
   try {
     await connectDB();
@@ -22,7 +23,7 @@ export async function GET(
   } catch (error) {
     return NextResponse.json(
       { error: "An error occurred while fetching comments" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -34,10 +35,20 @@ export interface AddCommentRequestBody {
 
 export async function POST(
   request: Request,
-  { params }: { params: { posts_id: string } }
+  { params }: { params: { posts_id: string } },
 ) {
-  const { user, text }: AddCommentRequestBody = await request.json();
+  auth().protect();
   try {
+    await connectDB();
+    const { user, text }: AddCommentRequestBody = await request.json();
+
+    if (!user?.userID || !text?.trim()) {
+      return NextResponse.json(
+        { error: "Invalid comment payload" },
+        { status: 400 },
+      );
+    }
+
     const post = await Post.findById(params.posts_id);
 
     if (!post) {
@@ -46,7 +57,7 @@ export async function POST(
 
     const comment: ICommentBase = {
       user,
-      text,
+      text: text.trim(),
     };
 
     await post.commentOnPost(comment);
@@ -54,7 +65,7 @@ export async function POST(
   } catch (error) {
     return NextResponse.json(
       { error: "An error occurred while adding comment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

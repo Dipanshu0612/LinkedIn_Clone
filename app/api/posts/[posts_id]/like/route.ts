@@ -1,26 +1,27 @@
 import connectDB from "@/mongodb/db";
 import { Post } from "@/mongodb/models/posts";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET(request:Request, {params}:{params :{posts_id : string}}
+export async function GET(
+  request: Request,
+  { params }: { params: { posts_id: string } },
 ) {
   await connectDB();
 
   try {
-    // console.log(params.posts_id);
-    const post = await Post.findOne({_id:`${params.posts_id}`});
+    const post = await Post.findById(params.posts_id);
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-    // console.log("Post Found",post)
+
     const likes = post.likes;
     return NextResponse.json(likes);
   } catch (error) {
-    // console.log(error)
     return NextResponse.json(
       { error: "An error occurred while fetching likes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -31,11 +32,14 @@ export interface LikePostRequestBody {
 
 export async function POST(
   request: Request,
-  { params }: { params: { posts_id: string } }
+  { params }: { params: { posts_id: string } },
 ) {
+  auth().protect();
   await connectDB();
-
-  const { userId }: LikePostRequestBody = await request.json();
+  const user = await currentUser();
+  if (!user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const post = await Post.findById(params.posts_id);
@@ -44,12 +48,12 @@ export async function POST(
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    await post.likePost(userId);
+    await post.likePost(user.id);
     return NextResponse.json({ message: "Post liked successfully" });
   } catch (error) {
     return NextResponse.json(
       { error: "An error occurred while liking the post" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
